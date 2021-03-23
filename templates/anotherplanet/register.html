@@ -1,0 +1,26 @@
+{% extends 'anotherplanet.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+      Register
+{% endblock %}
+
+{% block body_block %}
+<h1>Register and become a member of another planet.</h1>
+{% if registered %}
+Pet says: <strong>thank you for registering!</strong>
+<a href="{% url 'rango:index' %}">Return to the Categories.</a><br />
+{% else %}
+Pet says: <strong>register herer!</strong><br />
+<form id="user_form" method="post" action="{% url 'anotherplanet:register' %}"
+      enctype="multipart/form-data"></form>
+
+        {% csrf_token %}
+
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+
+        <input type="submit" name="submit" value="Register" />
+</form>
+{% endif %}
+{% endblock %}

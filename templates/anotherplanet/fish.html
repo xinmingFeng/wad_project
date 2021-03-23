@@ -1,0 +1,16 @@
+{% extends 'anotherplanet/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+        fish
+{% endblock %}
+
+{% block body_block %}
+   <h1>Who doesn't love a quiet little fish?</h1>
+   <div>
+       <p>Visits : {{ visits }}</p>
+   </div>
+   <div>
+       <a href='/anotherplanet/'>Categories</a>
+   </div>
+{% endblock %}

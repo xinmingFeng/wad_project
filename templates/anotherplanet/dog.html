@@ -1,0 +1,17 @@
+{% extends 'anotherplanet/base.html' %}
+{% load staticfiles %}
+
+
+{% block title_block %}
+        dog
+{% endblock %}
+
+{% block body_block %}
+   <h1>Dogs are man's most loyal friends!</h1>
+   <div>
+       <p>Visits : {{ visits }}</p>
+   </div>
+   <div>
+       <a href='/anotherplanet/'>Categories</a>
+   </div>
+{% endblock %}

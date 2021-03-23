@@ -1,0 +1,25 @@
+{% extends 'anotherplanet/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+        Catrgories
+{% endblock %}
+
+{% block body_block %}
+    <h1>Another Planet</h1>
+    <div>
+        {% if user.is_authenticated %}
+        howdy {{ user.name }}!
+        {% else %}
+        Welcome to another planet!
+        {% endif %}
+        <br />
+        <strong>{{ boldmessage }}</strong><br />
+    </div>
+   <div>
+       <a href='/anotherplanet/cat'>CAT</a><br />
+       <a href='/anotherplanet/dog'>DOG</a><br />
+       <a href='/anotherplanet/smallpets'>SMALLPETS</a><br />
+       <a href='/anotherplanet/fish'>FISH</a><br />
+   </div>
+ {% endblock %}
