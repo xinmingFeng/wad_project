@@ -155,8 +155,11 @@ def update_article(request, uid):
 def backend(request):
     article_num = models.Article.objects.filter(user=request.user).count()
     category_num = models.Category.objects.all().count()
-
+    liked_num=models.UpAndDown.objects.filter(user=request.user).count()
     article_list = models.Article.objects.filter(user=request.user)
+
+    liked_list=models.UpAndDown.objects.filter(user=request.user)
+
     page_num_int = int(request.GET.get('page', 1))
     paginator = Paginator(article_list, 10)
     if paginator.num_pages > 9:

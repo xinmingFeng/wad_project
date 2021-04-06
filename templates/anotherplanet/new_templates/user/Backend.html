@@ -5,9 +5,6 @@
 {% block title %}
     back-stage management
 {% endblock %}
-
-
-
 {% block content %}
     <div class="row mt-2">
         <div class="col-2">
@@ -17,8 +14,14 @@
                    aria-controls="v-pills-home" aria-selected="true">article
                     <span class="badge badge-primary ml-2">{{ article_num }}</span>
                 </a>
-
+                ﻿ <a class="nav-link left-tag" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile"
+                   role="tab"
+                   aria-controls="v-pills-profile" aria-selected="false">My thumb up
+                    <span class="badge badge-primary  ml-2">{{ liked_num }}</span>
+                </a>
             </div>
+
+
         </div>
         <div class="col-10">
             <div class="tab-content" id="v-pills-tabContent">
@@ -41,7 +44,7 @@
                                 <table class="table table-bordered table-hover text-center mt-2 align-items-center">
                                     <thead>
                                     <tr style="font-weight: bold">
-                                        <td>ID</td>
+                                         <td>ID</td>
                                         <td>title</td>
                                         <td>classification</td>
                                         <td>give the thumbs-up</td>
@@ -136,7 +139,7 @@
                                 <h1 class="text-center alert alert-warning mt-5">No article</h1>
                             {% endif %}
                         </div>
-                        <!-- 添加文章 -->
+                        <!-- add article -->
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel"
                              aria-labelledby="nav-profile-tab">
                             <div class="input-group-prepend mt-2">
@@ -184,219 +187,44 @@
                 <!-- classification -->
                 <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
                      aria-labelledby="v-pills-profile-tab">
-                    <nav>
-                        <div class="nav nav-tabs" id="nav-tab1" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-home-tab1" data-toggle="tab" href="#nav-home1"
-                               role="tab" aria-controls="nav-home1" aria-selected="true">Classification list</a>
-                            <a class="nav-item nav-link" id="nav-profile-tab1" data-toggle="tab" href="#nav-profile1"
-                               role="tab" aria-controls="nav-profile1" aria-selected="false">New classification</a>
-                        </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent1">
-                        <!-- Classification list -->
-                        <div class="tab-pane fade show active" id="nav-home1" role="tabpanel"
-                             aria-labelledby="nav-home-tab1">
-                            {% if category_num %}
-                                <h1 class="text-center m-3">Classification list</h1>
-                                <table class="table table-bordered table-hover text-center mt-2">
-                                    <thead>
-                                    <tr style="font-weight: bold">
-                                        <td>ID</td>
-                                        <td>Category name</td>
-                                        <td>operation</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for category in category_list %}
-                                        <tr>
-                                            <td>{{ category.id }}</td>
-                                            <td>
-                                                <a href="/{{ category.blog.userinfo.username }}/category/{{ category.pk }}.html">
-                                                    {{ category.name }}
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <button data-toggle="modal"
-                                                        data-target="#editModalCategory{{ category.pk }}"
-                                                        class="btn btn-outline-success mr-2">edit
-                                                </button>
-                                                <button class="btn btn-outline-danger delete-target"
-                                                        url1="category/{{ category.pk }}/"
-                                                        name1="[{{ category.name }}]">
-                                                    delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <div class="modal fade" id="editModalCategory{{ category.pk }}" tabindex="-1"
-                                             role="dialog"
-                                             aria-labelledby="editModalCategory{{ category.pk }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editModalCategory{{ category.pk }}">
-                                                            Modify classification{{ category.name }}</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="input-group-prepend mt-2 mx-5">
-                                                            <div class="input-group-text">
-                                                                Classification name
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                   value="{{ category.name }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">cancel
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary update_category"
-                                                                value5="{{ category.pk }}/" type1="category/">preservation
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            {% else %}
-                                <h1 class="text-center alert alert-warning mt-5">No classification</h1>
-                            {% endif %}
-                        </div>
-                        <!-- Add category -->
-                        <div class="tab-pane fade" id="nav-profile1" role="tabpanel"
-                             aria-labelledby="nav-profile-tab1">
-                            <h1 class="text-center m-3">Add category</h1>
-                            <div class="m-5 px-5">
-                                <div class="input-group-prepend mt-2 mx-5">
-                                    <div class="input-group-text">
-                                        Classification name
-                                    </div>
-                                    <input type="text" class="form-control add_name"
-                                           placeholder="Please enter the name of the category you want to add" id="add-category">
+                     <div class="summary-list">
+                        {% for article in liked_list %}
+                            <div class="media mb-1 mb-sm-2 p-2 p-lg-3">
+                                <div class="align-self-center mr-2 mr-lg-3 w-25 modal-open">
+                                    <a href="/article/{{ article.article.id }}.html"
+                                       target="_blank">
+                                        <img class="w-100 article-img" src="/media/{{  article.article.head_img }}"
+                                             alt="{{  article.article.title }}">
+                                    </a>
                                 </div>
-                                <div class="mt-2 mx-5">
-                                    <button class="btn btn-success btn-block add_target" id="btn-add-category"
-                                            mine="category/">add
-                                    </button>
+                                <div class="media-body">
+                                    <div class="text-muted mb-2 f-12">
+
+                                        <span>{{  article.article.user.username }}</span>
+                                        <span><i
+                                                class="fa fa-calendar-times-o ml-2 mr-1"></i>{{  article.article.create_time|date:'Y.m.d.' }}</span>
+                                    </div>
+                                    <h2 class="mt-0 font-weight-bold text-info f-17">
+                                        <a href="/article/{{  article.article.id }}.html">
+                                            {{  article.article.title }}
+                                        </a>
+                                    </h2>
+                                    <p class="d-none d-sm-block mb-2 f-15"> {{  article.article.description|truncatechars:"90" }}...</p>
+                                    <div class="text-muted mb-0 f-12">
+                                        <a class="cate"
+                                           href=""
+                                           title="View more articles under current category">
+                                            <i class="fa fa-book mr-1"></i>{{  article.article.category.name }}</a>
+                                        <span><i class="fa fa-eye ml-2 mr-1"></i>{{  article.article.views }}</span>
+
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endfor %}
+
                     </div>
                 </div>
-                <!-- Tag -->
-                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
-                     aria-labelledby="v-pills-messages-tab">
-                    <nav>
-                        <div class="nav nav-tabs" id="nav-tab2" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-home-tab2" data-toggle="tab" href="#nav-home2"
-                               role="tab" aria-controls="nav-home2" aria-selected="true">Tag list</a>
-                            <a class="nav-item nav-link" id="nav-profile-tab2" data-toggle="tab" href="#nav-profile2"
-                               role="tab" aria-controls="nav-profile2" aria-selected="false">New tag</a>
-                        </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent2">
-                        <!-- Tag list -->
-                        <div class="tab-pane fade show active" id="nav-home2" role="tabpanel"
-                             aria-labelledby="nav-home-tab2">
-                            {% if tag_num %}
-                                <h1 class="text-center m-3">Tag list</h1>
-                                <table class="table table-bordered table-hover text-center mt-2">
-                                    <thead>
-                                    <tr style="font-weight: bold">
-                                        <td>ID</td>
-                                        <td>Tag name</td>
-                                        <td>operation</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for tag in tag_list %}
-                                        <tr>
-                                            <td>{{ tag.id }}</td>
-                                            <td>
-                                                <a href="/{{ tag.blog.userinfo.username }}/category/{{ tag.pk }}.html">
-                                                    {{ tag.name }}
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <button data-toggle="modal"
-                                                        data-target="#editModalTag{{ tag.pk }}"
-                                                        class="btn btn-outline-success mr-2">edit
-                                                </button>
-                                                <button class="btn btn-outline-danger delete-target"
-                                                        url1="tag/{{ tag.pk }}/"
-                                                        name1="<{{ tag.name }}>">
-                                                    delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <div class="modal fade" id="editModalTag{{ tag.pk }}" tabindex="-1"
-                                             role="dialog"
-                                             aria-labelledby="editModalTag{{ tag.pk }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editModalTag{{ tag.pk }}">
-                                                            Modify label{{ tag.name }}</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="input-group-prepend mt-2 mx-5">
-                                                            <div class="input-group-text">
-                                                                Tag name
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                   value="{{ tag.name }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">cancel
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary update_tag"
-                                                                value6="{{ tag.pk }}/" type2="tag/">preservation
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
 
-                                    </tbody>
-
-                                </table>
-                            {% else %}
-                                <h1 class="text-center alert alert-warning mt-5">No label</h1>
-                            {% endif %}
-                        </div>
-                        <!-- Add tags -->
-                        <div class="tab-pane fade" id="nav-profile2" role="tabpanel"
-                             aria-labelledby="nav-profile-tab2">
-                            <h1 class="text-center m-3">add tags</h1>
-                            <div class="m-5 px-5">
-                                <div class="input-group-prepend mt-2 mx-5">
-                                    <div class="input-group-text">
-                                        Tag name
-                                    </div>
-                                    <input type="text" class="form-control add_name"
-                                           placeholder="Please enter the name of the label you want to add" id="add-tag">
-                                </div>
-                                <div class="mt-2 mx-5">
-                                    <button class="btn btn-success btn-block add_target" id="btn-add-tag" mine="tag/">
-                                        add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -444,7 +272,7 @@
                         if (data.code === 100) {
                             swal({
                                 title: data.msg,
-                                text: 'Refreshing page for you!'
+                                text: 'Refreshing page for you！'
                             })
                             setTimeout(function () {
                                 location.reload()

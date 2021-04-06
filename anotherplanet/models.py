@@ -23,8 +23,6 @@ class Article(models.Model):
     markdown = models.TextField(verbose_name='Markdown内容', default='暂无', help_text='文章的Markdown内容')
     modify_time = models.DateTimeField(auto_now=True, verbose_name='修改时间', help_text='该文章的最后修改时间')
     views=models.PositiveIntegerField(verbose_name="浏览数",null=True,blank=True,default=0)
-
-
     def __str__(self):
         return self.title
     class Meta:
@@ -60,8 +58,7 @@ class Comment(models.Model):
 # 点赞点踩
 class UpAndDown(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name='用户', help_text='来自哪个用户')
-    article = models.ForeignKey(to='Article', on_delete=models.CASCADE, null=True, verbose_name='文章',
-                                help_text='针对哪篇文章')
+    article = models.ForeignKey(to='Article', on_delete=models.CASCADE, null=True, verbose_name='文章',help_text='针对哪篇文章')
     is_up = models.BooleanField(null=True, verbose_name='点赞点踩', help_text='True为点赞，False为点踩')
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='点赞点踩的时间')
 
