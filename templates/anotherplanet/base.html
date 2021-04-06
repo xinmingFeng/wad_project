@@ -3,40 +3,33 @@
 
 
 <html>
-    <head lang="en">
-        <meta charset="UTF-8" />
-        <title>Anotherplanet -
-               {% block title_block %}
-                  Enjoy your time with pets!
-               {% endblock %}
-        </title>
-    </head>
-    <body>
-        <div>
-        {% block body_block %}
-
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>Anotherplanet -
+        {% block title_block %}
+            Enjoy your time with pets!
         {% endblock %}
-        </div>
+    </title>
+</head>
+<body>
+<div>
+    {% block body_block %}
 
-        <hr />
-        <div>
-            <ul>
-                  {% if user.is_authenticated %}
-                  <li><a href="{% url 'anotherplanet:restricted' %}">Restricted Page</a></li>
-                  <li><a href="{% url 'anotherplanet:logout' %}">Logout</a></li>
-                  {% else %}
+    {% endblock %}
+</div>
 
-                  <li><a href="{% url 'anotherplanet:register' %}">Sign Up</a></li>
-                  <li><a href="{% url 'anotherplanet:login' %}">Login</a></li>
-                  {% endif %}
-                  <li><a href="{% url 'anotherplanet:cat' %}">CAT</a></li>
-                  <li><a href="{% url 'anotherplanet:index' %}">Cateories</a></li>
-                  <li><a href="{% url 'anotherplanet:dog' %}">DOG</a></li>
-                  <li><a href="{% url 'anotherplanet:smallpets' %}">SMALLPETS</a></li>
-                  <li><a href="{% url 'anotherplanet:fish' %}">FISH</a></li>
+<hr/>
+<div>
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'anotherplanet:restricted' %}">Restricted Page</a></li>
+            <li><a href="{% url 'anotherplanet:logout' %}">Logout</a></li>
+        {% else %}
 
-
-            </ul>
-        </div>
-    </body>
+            <li><a href="{% url 'anotherplanet:register' %}">Sign Up</a></li>
+            <li><a href="{% url 'anotherplanet:login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</div>
+</body>
 </html>

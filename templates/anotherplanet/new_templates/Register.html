@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Register page</title>
+    {% include 'anotherplanet/new_templates/template_static/css_base.html' %}
+    <style>
+        ul {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="mt-5 mb-5"><br></div>
+    <div class="row mt-5 mb-5">
+        <div class="col-md-6 offset-md-3 card bg-white shadow-sm mr-3 my-img">
+            <div class="row">
+                <div class="col-md-4 bg-black-4">
+                    <div class="h-100 pt-5 text-center">
+                        <h2 class="text-white ml-3 mt-5">Do you have an account?</h2>
+                        <p class="text-white mb-5">Log in if you have an account. Long time no see!</p>
+                        <div class="mt-5 mb-5"><br><br><br><br><br><br></div>
+                        <a href="{% url 'anotherplanet:login' %}" class="btn btn-outline-light">Login</a>
+                    </div>
+                </div>
+                <div class="col-md-8 card-body p-5 bg-white-7">
+                    <div class="mt-1"></div>
+                    <h1 class="text-center mt-5">Register now</h1>
+                    <form action="" novalidate class="mx-5 my-3" id="form">
+                        {% csrf_token %}
+                        {% for foo in form %}
+                            <div class="input-group mt-2">
+                                <div class="height-40 width-b100">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <label for="{{ foo.auto_id }}" class="mb-0">{{ foo.label|safe }}</label>
+                                        </div>
+                                        {{ foo }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="input-group mt-2">
+                            <div class="height-40 width-b100">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <i class="fa fa-user-circle-o width-30" aria-hidden="true"></i>
+                                    </div>
+                                    <label for="avatar">
+                                        <img src="/static/img/default.png" alt="head portrait" class="avatar ml-3" id="img">
+                                    </label>
+                                    <input type="file" id="avatar" name="avatar" class="d-none" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="button" class="btn btn-outline-primary btn-block mt-3 mb-5" value="register" id="btn-reg" >
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<script>
+    $('#avatar').change(function () {
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL($('#avatar')[0].files[0])
+        fileReader.onload = function () {
+            $('#img').attr('src', fileReader.result)
+        }
+    })
+    $('#btn-reg').click(function () {
+        const formData = new FormData()
+        formData.append('avatar', $('#avatar')[0].files[0])
+        const ser = $('#form').serializeArray()
+        $.each(ser, function (k, v) {
+            formData.append(v.name, v.value)
+        })
+        $.ajax({
+            url: '{% url 'anotherplanet:register' %}',
+            method: 'post',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                if (data.code === 100) {
+                    swal({
+                        title: data.msg,
+                        text: 'Going to login page',
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    })
+                    setTimeout(function () {
+                        location.href = data.url
+                    }, 1700)
+                } else {
+                    let errorData = new FormData()
+                    $('input').addClass('is-valid')
+                    $.each(data.err, function (k, v) {
+                        $("#id_" + k).addClass('is-invalid').removeClass('is-valid')
+                        errorData.append(k, v)
+                    })
+
+                    $('#tips').removeClass('invisible')
+                    $("#tips1").text(errorData.getAll('username')).removeClass('d-none')
+                    $("#tips2").text(errorData.getAll('password')).removeClass('d-none')
+                    $("#tips3").text(errorData.getAll('re_password')).removeClass('d-none')
+                    $("#tips4").text(errorData.getAll('email')).removeClass('d-none')
+                    $("#tips5").text(errorData.getAll('__all__')).removeClass('d-none')
+
+                    if (errorData.getAll('__all__').length === 1) {
+                        $('#id_password').addClass('is-invalid')
+                        $('#id_re_password').addClass('is-invalid')
+                        setTimeout(function () {
+                            $('#id_password').removeClass('is-invalid').removeClass('is-valid').val('')
+                            $('#id_re_password').removeClass('is-invalid').removeClass('is-valid').val('')
+                        }, 3000)
+                    }
+
+                    setTimeout(function () {
+                        $('#tips').addClass('invisible')
+                        $('.is-invalid').removeClass('is-invalid').val('')
+                    }, 3000)
+                }
+            }
+        })
+    })
+    $('#id_username').blur(function () {
+        $.ajax({
+            url: '/check_username/?username=' + $('#id_username').val(),
+            method: 'get',
+            success: (function (data) {
+                if (data.code === 100) {
+                    $('#id_username').addClass('is-valid')
+                } else if (data.code === 102) {
+                    $('#tips').removeClass('invisible')
+                    $("#tips1").text(data.msg).removeClass('d-none')
+                    $('#id_username').addClass('is-invalid')
+                    setTimeout(function () {
+                        $('#tips').addClass('invisible')
+                        $('#id_username').removeClass('is-invalid').removeClass('is-valid')
+                    }, 2000)
+                } else {
+                    $('#tips').removeClass('invisible')
+                    $("#tips1").text(data.msg).removeClass('d-none')
+                    $('#id_username').addClass('is-invalid')
+                    setTimeout(function () {
+                        $('#tips').addClass('invisible')
+                        $('#id_username').removeClass('is-invalid').val('')
+                    }, 2000)
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

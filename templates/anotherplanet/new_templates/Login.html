@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Register page</title>
+    {% include 'anotherplanet/new_templates/template_static/css_base.html' %}
+    <style>
+        ul {
+            list-style: none
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="mt-5 mb-5"><br></div>
+    <div class="row mt-5 mb-5">
+        <div class="col-md-6 offset-md-3 card bg-white shadow-sm mr-3 my-img">
+            <div class="row">
+                <div class="col-md-8 card-body p-5 bg-white-7">
+                    <div class="mt-5 mb-5"><br></div>
+                    <h1 class="text-center mt-5 swiper-cube-shadow">Welcome back</h1>
+                    <form action="" method="post" class="mx-5 my-3">
+                        {% csrf_token %}
+                        {% for foo in form %}
+                            <div class="input-group mt-2">
+                                <div class="height-40 width-b100">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <label for="{{ foo.auto_id }}" class="mb-0">{{ foo.label|safe }}</label>
+                                        </div>
+                                        {{ foo }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text radius-5">
+                                    <i class="fa fa-hand-o-right width-30" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control radius-5" id="valid_code" name="password"
+                                   placeholder="Please enter the verification code">
+                            <img src="/get_valid_code/" height="38" width="200" id="valid_code_img"
+                                 class="ml-1 radius-5 pointer" title="Click to refresh the verification code">
+                        </div>
+                        <input type="button" class="btn btn-outline-primary btn-block mt-3 mb-5" value="Sign in" id="btn-login">
+                    </form>
+                    <div class="mt-5 mb-3"><br><br></div>
+                </div>
+                <div class="col-md-4 bg-black-4">
+                    <div class="h-100 pt-5 text-center">
+                        <h2 class="text-white ml-3 mt-5">Not registered yet?？</h2>
+                        <p class="text-white mb-5">Register now and watch more!</p>
+                        <div class="mt-5 mb-5"><br><br><br><br><br><br></div>
+                        <a href="{% url 'anotherplanet:register' %}" class="btn btn-outline-light">To register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-warning ml-5 col-md-2 shadow-sm invisible max-height-240" id="tips">
+            <h4 class="alert-heading">reminder：</h4>
+            <hr>
+            <div class="d-none font-weight-bold m-3" id="tips1"></div>
+            <div class="d-none font-weight-bold m-3" id="tips2"></div>
+            <div class="d-none font-weight-bold m-3" id="tips3"></div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#valid_code_img').click(function () {
+        var url = $("#valid_code_img")[0].src
+        $("#valid_code_img")[0].src = url + '?'
+    })
+    $('#btn-login').click(function () {
+        $('input').addClass('is-valid')
+        if ($('#id_username').val().length === 0) {
+            $('#id_username').removeClass('is-valid').addClass('is-invalid')
+            $('#tips').removeClass('invisible')
+            $("#tips1").text('enter one user name').removeClass('d-none')
+            setTimeout(function () {
+                $('#tips').addClass('invisible')
+                $('#id_username').removeClass('is-invalid').val('')
+            }, 1500)
+        }
+        $('#id_password').addClass('is-valid')
+        if ($('#id_password').val().length === 0) {
+            $('#id_password').removeClass('is-valid').addClass('is-invalid')
+            $('#tips').removeClass('invisible')
+            $("#tips2").text('Please input a password').removeClass('d-none')
+            setTimeout(function () {
+                $('#tips').addClass('invisible')
+                $('#id_password').removeClass('is-invalid').val('')
+            }, 1500)
+        }
+        $.ajax({
+            url: '/anotherplanet/login/',
+            method: 'post',
+            data: {
+                'username': $('#id_username').val(),
+                'password': $('#id_password').val(),
+                'valid_code': $('#valid_code').val(),
+                'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function (data) {
+                console.log(data.url)
+                if (data.code === 100) {
+                    swal({
+                        title: data.msg,
+                        text: 'Skipping page for you',
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    })
+                    setTimeout(function () {
+                        location.href = data.url
+                    }, 1500)
+                } else if (data.code === 101) {
+                    $('#tips').removeClass('invisible')
+                    $("#tips1").text(data.msg).removeClass('d-none')
+                    $('#id_username').removeClass('is-valid').addClass('is-invalid')
+                    $('#id_password').removeClass('is-valid').addClass('is-invalid')
+                    setTimeout(function () {
+                        $('#tips').addClass('invisible')
+                        $('#id_username').removeClass('is-invalid').val('')
+                        $('#id_password').removeClass('is-invalid').val('')
+                    }, 1500)
+                } else if (data.code === 102) {
+                    $('#tips').removeClass('invisible')
+                    $("#tips3").text(data.msg).removeClass('d-none')
+                    $('#valid_code').addClass('is-invalid')
+                    setTimeout(function () {
+                        $('#tips').addClass('invisible')
+                        $('#valid_code').removeClass('is-invalid').removeClass('is-valid').val('')
+                    }, 1500)
+                }
+            }
+        })
+    })
+    $('#id_username').blur(function () {
+        $('#id_username').addClass('is-valid')
+        if ($('#id_username').val().length === 0) {
+            $('#id_username').removeClass('is-valid').addClass('is-invalid')
+            $('#tips').removeClass('invisible')
+            $("#tips1").text('enter one user name').removeClass('d-none')
+            setTimeout(function () {
+                $('#tips').addClass('invisible')
+                $('#id_username').removeClass('is-invalid').val('')
+            }, 1500)
+        }
+    })
+    $('#id_password').blur(function () {
+        $('#id_password').addClass('is-valid')
+        if ($('#id_password').val().length === 0) {
+            $('#id_password').removeClass('is-valid').addClass('is-invalid')
+            $('#tips').removeClass('invisible')
+            $("#tips2").text('Please input a password').removeClass('d-none')
+            setTimeout(function () {
+                $('#tips').addClass('invisible')
+                $('#id_password').removeClass('is-invalid').val('')
+            }, 1500)
+        }
+    })
+    $('#valid_code').blur(function () {
+        if ($('#valid_code').val().length === 0) {
+            $('#valid_code').addClass('is-invalid')
+            $('#tips').removeClass('invisible')
+            $("#tips3").text('Please enter the verification code').removeClass('d-none')
+            setTimeout(function () {
+                $('#tips').addClass('invisible')
+                $('#valid_code').removeClass('is-invalid').val('')
+            }, 1500)
+        }
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<style>
+    .badge {
+        width: 2.2rem;
+        background-color: #17a2b8;
+        color: #fff;
+        font-weight: 700;
+        border-radius: .2rem;
+    }
+</style>
+<div class="card">
+    <h5 class="card-header"><strong><i class="fa fa-book mr-2 f-17"></i>Article classification</strong></h5>
+    <div class="card-body">
+
+        <ul class="list-group list-group-flush f-16">
+            {% for category in res_category %}
+                {#                <a href="/{{ name }}/category/{{ category.2 }}.html">{{ category.0 }}（{{ category.1 }}）</a><br>#}
+                <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                    <a class="category-item" href="/{{ name }}/category/{{ category.2 }}.html">{{ category.0 }}</a>
+                    <span class="badge text-center" title="Under the current category are{{ category.1 }}articles">{{ category.1 }}</span>
+                </li>
+
+            {% endfor %}
+
+        </ul>
+    </div>
+</div>
+<br>
+
+<br>
+<div class="card">
+    <h5 class="card-header">Date filing</h5>
+    <div class="card-body">
+        {% for date in res_date %}
+            <a href="/{{ name }}/archive/{{ date.0|date:'Y/m' }}.html">{{ date.0|date:'Y.m.' }}（{{ date.1 }}articles）</a>
+            <br>
+        {% endfor %}
+    </div>
+</div>
+<br>

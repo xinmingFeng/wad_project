@@ -1,0 +1,622 @@
+{% extends 'anotherplanet/new_templates/template_base/base.html' %}
+
+
+
+{% block title %}
+    back-stage management
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row mt-2">
+        <div class="col-2">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active left-tag" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home"
+                   role="tab"
+                   aria-controls="v-pills-home" aria-selected="true">article
+                    <span class="badge badge-primary ml-2">{{ article_num }}</span>
+                </a>
+
+            </div>
+        </div>
+        <div class="col-10">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- article -->
+                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                     aria-labelledby="v-pills-home-tab">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
+                               role="tab" aria-controls="nav-home" aria-selected="true">Article list</a>
+                            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
+                               role="tab" aria-controls="nav-profile" aria-selected="false">New article</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <!-- Article list -->
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                             aria-labelledby="nav-home-tab">
+                            {% if article_num > 0 %}
+                                <table class="table table-bordered table-hover text-center mt-2 align-items-center">
+                                    <thead>
+                                    <tr style="font-weight: bold">
+                                        <td>ID</td>
+                                        <td>title</td>
+                                        <td>classification</td>
+                                        <td>give the thumbs-up</td>
+                                        <td>Step on</td>
+                                        <td>comment</td>
+                                        <td>Creation date</td>
+                                        <td>operation</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for article in page.object_list %}
+                                        <tr>
+                                            <td>{{ article.id }}</td>
+                                            <td>
+                                                <a href="/article/{{ article.pk }}.html">{{ article.title }}</a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'categories_list' article.category.id%}">{{ article.category }}</a>
+                                            </td>
+                                            <td>{{ article.up_num }}</td>
+                                            <td>{{ article.down_num }}</td>
+                                            <td>{{ article.comment_num }}</td>
+                                            <td>{{ article.create_time|date:'Y-m-d H:i' }}</td>
+                                            <td>
+                                                <a href="/anotherplanet/update_article/{{ article.pk }}"
+                                                   class="btn btn-outline-success mr-2">edit</a>
+                                                <button class="btn btn-outline-danger delete-target"
+                                                        url1="{{ article.pk }}/"
+                                                        name1="《{{ article.title }}》">
+                                                    delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-center">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            {% if page.has_previous %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="{% url 'backend' %}?page={{ start }}">Home page</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="{% url 'backend' %}?page={{ page.previous_page_number }}">Previous page</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#">Home page</a>
+                                                </li>
+                                                <li class="page-item disabled"><a class="page-link" href="#">Previous page</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for page_num in page_range %}
+                                                {% if page_num_int == page_num %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link"
+                                                           href="{% url 'backend' %}?page={{ page_num }}">{{ page_num }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="{% url 'backend' %}?page={{ page_num }}">{{ page_num }}</a>
+                                                    </li>
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                            {% if page.has_next %}
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="{% url 'backend' %}?page={{ page.next_page_number }}">Next page</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href="{% url 'backend' %}?page={{ end }}">Last page</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item disabled"><a class="page-link" href="#">Next page</a>
+                                                </li>
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#">Last page</a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            {% else %}
+                                <h1 class="text-center alert alert-warning mt-5">No article</h1>
+                            {% endif %}
+                        </div>
+                        <!-- 添加文章 -->
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel"
+                             aria-labelledby="nav-profile-tab">
+                            <div class="input-group-prepend mt-2">
+                                <div class="input-group-text">
+                                    <i class="fa fa-header width-30" aria-hidden="true"></i>
+                                </div>
+                                <label for="title">
+                                </label>
+                                <input type="text" class="form-control" placeholder="Please enter the title of the article"
+                                       required id="article-title" name="title">
+                            </div>
+                            <div class="input-group-prepend mt-2">
+                                <div id="editor">
+                                    <textarea style="display:none;"></textarea>
+                                    <textarea class="editormd-html-textarea" name="html-code"></textarea>
+                                </div>
+                            </div>
+                            <div class="input-group-prepend mt-2">
+                                <div class="input-group-text">
+                                    <i class="fa fa-th-large width-30" aria-hidden="true"></i>
+                                </div>
+                                <label for="choose_category"></label>
+                                <select class="form-control" id="choose_category" name="category" required>
+                                    {% for category in category_list %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="input-group-prepend mt-2">
+                                <div class="input-group-text">
+                                    <i class="fa fa-file-image-o width-30" aria-hidden="true"></i>
+                                </div>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="head_img" required
+                                           accept="image/*">
+                                    <label class="custom-file-label" for="customFile"><span
+                                            style="color: rgba(0,0,0,0.5)">Please select the article header</span></label>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-block mt-3" id="publish-article">release</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- classification -->
+                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                     aria-labelledby="v-pills-profile-tab">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab1" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-home-tab1" data-toggle="tab" href="#nav-home1"
+                               role="tab" aria-controls="nav-home1" aria-selected="true">Classification list</a>
+                            <a class="nav-item nav-link" id="nav-profile-tab1" data-toggle="tab" href="#nav-profile1"
+                               role="tab" aria-controls="nav-profile1" aria-selected="false">New classification</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent1">
+                        <!-- Classification list -->
+                        <div class="tab-pane fade show active" id="nav-home1" role="tabpanel"
+                             aria-labelledby="nav-home-tab1">
+                            {% if category_num %}
+                                <h1 class="text-center m-3">Classification list</h1>
+                                <table class="table table-bordered table-hover text-center mt-2">
+                                    <thead>
+                                    <tr style="font-weight: bold">
+                                        <td>ID</td>
+                                        <td>Category name</td>
+                                        <td>operation</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for category in category_list %}
+                                        <tr>
+                                            <td>{{ category.id }}</td>
+                                            <td>
+                                                <a href="/{{ category.blog.userinfo.username }}/category/{{ category.pk }}.html">
+                                                    {{ category.name }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <button data-toggle="modal"
+                                                        data-target="#editModalCategory{{ category.pk }}"
+                                                        class="btn btn-outline-success mr-2">edit
+                                                </button>
+                                                <button class="btn btn-outline-danger delete-target"
+                                                        url1="category/{{ category.pk }}/"
+                                                        name1="[{{ category.name }}]">
+                                                    delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <div class="modal fade" id="editModalCategory{{ category.pk }}" tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="editModalCategory{{ category.pk }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalCategory{{ category.pk }}">
+                                                            Modify classification{{ category.name }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="input-group-prepend mt-2 mx-5">
+                                                            <div class="input-group-text">
+                                                                Classification name
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                   value="{{ category.name }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary update_category"
+                                                                value5="{{ category.pk }}/" type1="category/">preservation
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <h1 class="text-center alert alert-warning mt-5">No classification</h1>
+                            {% endif %}
+                        </div>
+                        <!-- Add category -->
+                        <div class="tab-pane fade" id="nav-profile1" role="tabpanel"
+                             aria-labelledby="nav-profile-tab1">
+                            <h1 class="text-center m-3">Add category</h1>
+                            <div class="m-5 px-5">
+                                <div class="input-group-prepend mt-2 mx-5">
+                                    <div class="input-group-text">
+                                        Classification name
+                                    </div>
+                                    <input type="text" class="form-control add_name"
+                                           placeholder="Please enter the name of the category you want to add" id="add-category">
+                                </div>
+                                <div class="mt-2 mx-5">
+                                    <button class="btn btn-success btn-block add_target" id="btn-add-category"
+                                            mine="category/">add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tag -->
+                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                     aria-labelledby="v-pills-messages-tab">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab2" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-home-tab2" data-toggle="tab" href="#nav-home2"
+                               role="tab" aria-controls="nav-home2" aria-selected="true">Tag list</a>
+                            <a class="nav-item nav-link" id="nav-profile-tab2" data-toggle="tab" href="#nav-profile2"
+                               role="tab" aria-controls="nav-profile2" aria-selected="false">New tag</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent2">
+                        <!-- Tag list -->
+                        <div class="tab-pane fade show active" id="nav-home2" role="tabpanel"
+                             aria-labelledby="nav-home-tab2">
+                            {% if tag_num %}
+                                <h1 class="text-center m-3">Tag list</h1>
+                                <table class="table table-bordered table-hover text-center mt-2">
+                                    <thead>
+                                    <tr style="font-weight: bold">
+                                        <td>ID</td>
+                                        <td>Tag name</td>
+                                        <td>operation</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for tag in tag_list %}
+                                        <tr>
+                                            <td>{{ tag.id }}</td>
+                                            <td>
+                                                <a href="/{{ tag.blog.userinfo.username }}/category/{{ tag.pk }}.html">
+                                                    {{ tag.name }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <button data-toggle="modal"
+                                                        data-target="#editModalTag{{ tag.pk }}"
+                                                        class="btn btn-outline-success mr-2">edit
+                                                </button>
+                                                <button class="btn btn-outline-danger delete-target"
+                                                        url1="tag/{{ tag.pk }}/"
+                                                        name1="<{{ tag.name }}>">
+                                                    delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <div class="modal fade" id="editModalTag{{ tag.pk }}" tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="editModalTag{{ tag.pk }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalTag{{ tag.pk }}">
+                                                            Modify label{{ tag.name }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="input-group-prepend mt-2 mx-5">
+                                                            <div class="input-group-text">
+                                                                Tag name
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                   value="{{ tag.name }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary update_tag"
+                                                                value6="{{ tag.pk }}/" type2="tag/">preservation
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+                            {% else %}
+                                <h1 class="text-center alert alert-warning mt-5">No label</h1>
+                            {% endif %}
+                        </div>
+                        <!-- Add tags -->
+                        <div class="tab-pane fade" id="nav-profile2" role="tabpanel"
+                             aria-labelledby="nav-profile-tab2">
+                            <h1 class="text-center m-3">add tags</h1>
+                            <div class="m-5 px-5">
+                                <div class="input-group-prepend mt-2 mx-5">
+                                    <div class="input-group-text">
+                                        Tag name
+                                    </div>
+                                    <input type="text" class="form-control add_name"
+                                           placeholder="Please enter the name of the label you want to add" id="add-tag">
+                                </div>
+                                <div class="mt-2 mx-5">
+                                    <button class="btn btn-success btn-block add_target" id="btn-add-tag" mine="tag/">
+                                        add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block js %}
+    <script src="/static/js/token.js"></script>
+    <script src="/static/other/editor.md/editormd.min.js"></script>
+    <script src="/static/other/editor.md/plugins/image-dialog/image-dialog.js"></script>
+    <script>
+        $('.editormd-preview').attr('background', 'width:533.375px !important;top:78px !important')
+        $(function () {
+            var editor = editormd("editor", {
+                height: 400,
+                path: '/static/other/editor.md/lib/',
+                syncScrolling: "single",
+                saveHTMLToTextarea: true,
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL: '/upload_img/',
+            });
+            $('#publish-article').click(function () {
+                let title = $('#article-title').val()
+                let category = $("#choose_category").val()
+                let head_img = $('#head_img')[0].files[0]
+                let mark_doc = editor.getMarkdown();
+                let html_doc = editor.getHTML();
+                let tags = $('#tag').val()
+                var formdata = new FormData()
+                formdata.append('title', title)
+                formdata.append('category', category)
+                formdata.append('head_img', head_img)
+                formdata.append('mark_doc', mark_doc)
+                formdata.append('html_doc', html_doc)
+                formdata.append('tags', tags)
+                $.ajax({
+                    url: '/add_article/',
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    success: function (data) {
+                        if (data.code === 100) {
+                            swal({
+                                title: data.msg,
+                                text: 'Refreshing page for you!'
+                            })
+                            setTimeout(function () {
+                                location.reload()
+                            }, 1500)
+                        }
+
+                    }
+                })
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+    </script>
+    <script src="/static/js/bs-custom-file-input.js"></script>
+    <script>
+        $('.delete-target').click(function () {
+            let url = $(this).attr('url1')
+            let name1 = $(this).attr('name1')
+            swal({
+                    title: "confirm deletion?",
+                    text: "confirm deletion" + name1 + "？",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Direct deletion!",
+                    cancelButtonText: "Let me see!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: '/delete/' + url,
+                            method: 'post',
+                            data: {
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                            success: function (data) {
+                                if (data.code === 100) {
+                                    swal("Successfully deleted!", "Refreshing page for you soon", "success")
+                                    setTimeout(function () {
+                                        location.href = '/backend/'
+                                    }, 1500)
+                                }
+                            }
+                        })
+                    } else {
+                        swal({
+                            title: "Cancel successfully！",
+                            type: "info",
+                        });
+                    }
+                });
+        })
+
+        $('.add_target').click(function () {
+            let myName = $(this).parent().prev().children('input').val()
+            let myUrl = $(this).attr('mine')
+            if (myName === '') {
+                swal({
+                    title: 'Please fill in the' + myName + 'name'
+                })
+            } else {
+                $.ajax({
+                    url: '/add/' + myUrl,
+                    method: 'post',
+                    data: {
+                        'name': myName,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    },
+                    success: function (data) {
+                        if (data.code === 100) {
+                            swal({
+                                    title: data.msg,
+                                    text: 'Do you want to continue adding？',
+                                    showCancelButton: true,
+                                    confirmButtonClass: 'btn btn-outline-primary',
+                                    confirmButtonText: 'Continue to add',
+                                    cancelButtonClass: 'btn btn-outline-danger',
+                                    cancelButtonText: 'Refresh page',
+                                    closeOnConfirm: true,
+                                    closeOnCancel: false
+                                },
+                                function (isConfirm) {
+                                    if (isConfirm) {
+                                        $('.add_name').val('')
+                                    } else {
+                                        location.reload()
+                                    }
+                                }
+                            )
+                        } else {
+                            swal({
+                                title: data.msg,
+                            })
+                            $('.add_name').val('')
+                        }
+                    }
+                })
+            }
+        })
+
+    </script>
+    <script>
+        $('.update_category').click(function () {
+            let uid = $(this).attr('value5')
+            let type1 = $(this).attr('type1')
+            let newCategory = $(this).parent().prev().children().children('input').val()
+            $.ajax({
+                url: '/update/' + type1 + uid,
+                method: 'post',
+                data: {
+                    'name': newCategory,
+                },
+                success: function (data) {
+                    if (data.code === 100) {
+                        swal({
+                            title: data.msg,
+                            text: 'Refreshing the page for you'
+                        })
+                        setTimeout(function () {
+                            location.reload()
+                        }, 1000)
+                    } else {
+                        swal({
+                            title: data.msg,
+                        })
+                        $('.update_category').parent().prev().children().children('input').val('')
+                    }
+                }
+            })
+        })
+        $('.update_tag').click(function () {
+            let uid = $(this).attr('value6')
+            let type1 = $(this).attr('type2')
+            let newTag = $(this).parent().prev().children().children('input').val()
+            $.ajax({
+                url: '/update/' + type1 + uid,
+                method: 'post',
+                data: {
+                    'name': newTag,
+                },
+                success: function (data) {
+                    if (data.code === 100) {
+                        swal({
+                            title: data.msg,
+                            text: 'Refreshing the page for you'
+                        })
+                        setTimeout(function () {
+                            location.reload()
+                        }, 1000)
+                    } else {
+                        swal({
+                            title: data.msg,
+                        })
+                        $('.update_category').parent().prev().children().children('input').val('')
+                    }
+                }
+            })
+        })
+    </script>
+    <script>
+        $('.left-tag').click(function () {
+            if ($('.left-tag').hasClass('active')) {
+                $(this).children('span').removeClass('badge-primary').addClass('badge-light')
+            } else {
+                $('.left-tag').children('span').removeClass('badge-light').addClass('badge-primary')
+            }
+        })
+        $('.modal-article').attr('style', 'max-width: 1200px !important;')
+    </script>
+{% endblock %}

@@ -1,0 +1,30 @@
+<script>
+    var provinces = ['{{ request.user.province }}','England', 'Scotland', 'Northern lreland'];
+    var citys = [['{{ request.user.city }}'],
+        ["London", "Brighton", "tianjing", "rochester", "Leeds", "bath", "Oxford and Southampton", "Portsmouth", "Liverpool", "Preston", "Plymouth", "sunderland", "Sheffield", "Bristol", "york", "Aberdeen", "Edinburgh", "Cardiff", "coventry", "Birmingham", "Manchester", "Newcastle", "Glasgow", "Cambridge", "Nottingham", "Belfast", "black sting", "ester bond"]];
+    $(function () {
+        init();
+    });
+
+    function init() {
+        var province = document.getElementById('param_province');
+        province.length = provinces.length;
+        for (var i = 0; i < provinces.length; i++) {
+            province.options[i].text = provinces[i];
+            province.options[i].value = provinces[i];
+        }
+    }
+
+    function provincechange() {
+        var province = document.getElementById("param_province");
+        var num = province.selectedIndex;
+        var city = document.getElementById('param_city');
+        var citystemp = citys[num];
+        city.length = citystemp.length;
+        for (var i = 0; i < citystemp.length; i++) {
+            city.options[i].text = citystemp[i];
+            city.options[i].value = citystemp[i];
+        }
+        city.options[0].selected = true;
+    }
+</script>

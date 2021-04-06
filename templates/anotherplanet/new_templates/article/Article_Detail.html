@@ -1,0 +1,272 @@
+{% extends 'anotherplanet/new_templates/template_base/base.html' %}
+
+
+
+{% block title %}
+    {{ article.title }}
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            {% load sideBar %}
+            {% left  %}
+        </div>
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    current location：
+                    <li class="breadcrumb-item"><a href="/index/">Home page</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="/{{ article.user.username }}">{{ article.title }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
+                    {% if request.user.username == article.user.username %}
+                        <a href="/update_article/{{ article.pk }}" class="ml-auto btn btn-outline-secondary btn-sm m-0">edit</a>
+                    {% endif %}
+                </ol>
+            </nav>
+            <div class="row mx-1">
+                <span class="alert alert-warning col-md-4"><strong>Published on：</strong>{{ article.create_time }}</span>
+                <span class="alert alert-info col-md-4"><strong>current time：</strong><span
+                        id="c_time"></span></span>
+                <span class="alert alert-success col-md-4"><strong>Updated on：</strong>{{ article.modify_time }}</span>
+            </div>
+            <div class="bg-white-95 radius-5 p-2">
+                <h1 class="text-center">{{ article.title }}</h1>
+                <hr>
+                <div class="mb-2 article-content">
+                    {{ content|safe }}
+                </div>
+
+                <!-- Thumb up click on the collection-->
+                {% if request.user.username %}
+                    <hr>
+                    <div class="row">
+                        <div id="div_digg" class="ml-auto mr-4">
+                            <div class="diggit action btn btn-success">
+                            <span class="diggnum" id="digg_count">
+                                <i class="fa fa-thumbs-o-up"></i>
+                                <span>{{ article.up_num }}</span>
+                            </span>
+                            </div>
+                            <div class="buryit action btn btn-danger">
+                            <span class="burynum" id="bury_count">
+                                <i class="fa fa-eye"></i>
+                                <span>{{ article.views }}</span>
+                            </span>
+                            </div>
+
+
+                        </div>
+                    </div>
+                {% endif %}
+
+                <hr>
+                <!-- comment -->
+                <div style="width: 100%" class="mt-2">
+                    <h1 class="text-center">Comment area</h1>
+                    <ul class="list-group comment">
+                        {% for comment in comment_list %}
+                            <li class="list-group-item">
+                                <div class="p-0">
+                                    <span>#{{ forloop.counter }}layer</span>
+                                    <span>{{ comment.comment_time|date:'Y-m-d H:i:s' }}</span>
+                                    <span class="">user：<a
+                                            href="/{{ comment.user.username }}">{{ comment.user.username }}</a>
+                                    </span>
+                                    {% if request.user.username %}
+                                        <button class="id_replay btn btn-outline-secondary btn-sm ml-auto d-block"
+                                                username="{{ comment.user.username }} " style="margin-top: -28px"
+                                                parent="{{ comment.pk }}">reply
+                                        </button>
+                                    {% endif %}
+
+                                </div>
+                                <hr class="my-2">
+                                <div>
+                                    {% if comment.comment_id_id %}
+                                        <p>@{{ comment.comment_id.user.username }}</p>
+                                        <p>{{ comment.content }}</p>
+                                    {% else %}
+                                        {{ comment.content }}
+                                    {% endif %}
+
+                                </div>
+                            </li>
+                        {% empty %}
+                            <div class="alert alert-warning"><h2 class="text-center">There is no comment at present</h2></div>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+                {% if request.user.is_authenticated %}
+                    <div class="mt-2">
+                        <p><textarea name="" class="width-b100 radius-5 p-2" id="id_text" rows="10"
+                                     placeholder="Here we are. Let's say something！" required></textarea></p>
+                        <button class="btn btn-success btn-block mb-2" id="id_comment">Comment</button>
+                    </div>
+                {% else %}
+                    <div class="mt-2 ml-1 alert alert-warning">
+                        Comments can only be made after login. Immediately <a href="/login/" class="btn btn-outline-primary btn-sm">register</a> or <a
+                            href="/register/" class="btn btn-outline-success btn-sm">register</a>, Visit home page
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-2 p-0">
+            {{ toc|safe }}
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script src="/static/js/highlight.js"></script>
+    <script src="/static/js/highlight-lines.js"></script>
+    <script src="/static/js/clipboard.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        hljs.initLineNumbersOnLoad();
+    </script>
+    <script>
+        var clipboard = new Clipboard('.copybtn');
+        clipboard.on('success', function (e) {
+            swal({
+                title: 'Copy succeeded！',
+                text: 'If you need to reprint, please indicate the source',
+                type: 'success',
+                timer: 1000,
+                showConfirmButton: false,
+            })
+        });
+        clipboard.on('error', function (e) {
+            swal({
+                title: 'copy failed！',
+                text: 'try it again！'
+                type: 'danger',
+                timer: 1000,
+                showConfirmButton: false,
+            })
+        });
+    </script>
+    <script>
+        window.onload = function () {
+            setInterval("NowTime()", 1000);
+        }
+
+        function NowTime() {
+            var myDate = new Date();
+            var y = myDate.getFullYear();
+            var M = myDate.getMonth() + 1;
+            var d = myDate.getDate();
+            var h = myDate.getHours();
+            var m = myDate.getMinutes();
+            var s = myDate.getSeconds();
+
+
+            M = check(M);
+            d = check(d);
+            h = check(h);
+            m = check(m);
+            s = check(s);
+            var timestr = y + "." + M + "." + d + "." + h + ":" + m + ":" + s;
+            document.getElementById("c_time").innerHTML = timestr;
+        }
+
+        function check(i) {
+            var num = (i < 10) ? ("0" + i) : i;
+            return num;
+        }
+    </script>
+    <script>
+        var parent_id = ''
+        $(".action").click(function () {
+            var is_up = $(this).hasClass('diggit')
+            var span = $(this).children('span').children('span')
+            $.ajax({
+                url: '/upanddown/',
+                method: 'post',
+                data: {
+                    article_id: '{{ article.id }}',
+                    is_up: is_up,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    swal({
+                        title: data.msg,
+                    })
+                    if (data.code === 100) {
+                        var num = Number(span.html()) + 1
+                        span.html(num)
+                    }
+                }
+            })
+        })
+
+        $('#id_comment').click(function () {
+            let content = $('#id_text').val()
+            if (parent_id) {
+                let i = content.indexOf('\n') + 1
+                content = content.slice(i)
+            }
+            $.ajax({
+                url: '/comment/',
+                method: 'post',
+                data: {
+                    article_id: '{{ article.id }}',
+                    content: content,
+                    parent: parent_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data.code === 100) {
+                        let username = data.username
+                        let res_content = data.content
+                        let parent_name = data.parent_name
+                        let ss = ``
+                        if (parent_id) {
+                            ss = `<li class="list-group-item">
+                                <div>
+                                    <span>${username}</span>
+                                </div>
+                                <div>
+                                <p>@${parent_name}</p>
+                                    ${res_content}
+                                </div>
+                            </li>`
+                        } else {
+                            ss = `<li class="list-group-item">
+                                <div>
+                                    <span>${username}</span>
+
+                                </div>
+                                <div>
+                                    ${res_content}
+                                </div>
+                            </li>`
+                        }
+                        $('#id_text').val('')
+                        $('.comment').append(ss)
+                        parent_id = ''
+                    }
+                }
+            })
+        })
+
+        $('.id_replay').click(function () {
+            let username = $(this).attr('username')
+            parent_id = $(this).attr('parent')
+            $('#id_text').val('@' + username + '\n').focus()
+        })
+
+
+
+
+    </script>
+    <script>
+        $('body').attr('style', 'background:url(/media/{{ article.blog.userinfo.bg_img }}) !important;background-attachment: fixed !important;background-size: cover !important;')
+    </script>
+{% endblock %}

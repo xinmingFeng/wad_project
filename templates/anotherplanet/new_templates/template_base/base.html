@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}
+
+    {% endblock %}</title>
+
+
+    {% block extra_css %}
+    {% endblock %}
+    {% block css %}
+        {% include 'anotherplanet/new_templates/template_static/css_base.html' %}
+        <style>
+            #category-card, #tag-card, #friends-card {
+                background: #ffffff !important;
+                padding: 10px
+            }
+        </style>
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-info">
+    <div class="container">
+        <a href="{% url 'anotherplanet:categories' %}" class="mr-3 text-white"><i class="fa fa-reddit-alien fa-2x"></i>
+        </a>
+        <a href="{% url 'anotherplanet:categories' %}" class="mx-2 text-white ">
+            anotherplanet
+        </a>
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser %}
+                <a href="/admin/" class="mx-2 text-white btn btn-info">
+                    Admin back-stage management
+                </a>
+            {% endif %}
+            <a href="{% url 'backend' %}" class="mx-2 text-white btn btn-info">
+                Personal Center
+            </a>
+            <div class="btn-group ml-auto">
+
+                <span class="text-white my-1 ml-1 mr-3"><strong>{{ request.user.username }}</strong></span>
+                <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    more
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{% url 'anotherplanet:logout' %}">logout</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="ml-auto">
+                <a href="{% url 'anotherplanet:register' %}" class="mx-2 text-white btn btn-info ">
+                    register
+                </a>
+                <a href="{% url 'anotherplanet:login' %}" class="mx-2 text-white btn btn-info ">
+                    login
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+
+<!--Navigation-->
+{% block content_sw %}
+{% endblock %}
+
+{% block index %}
+{% endblock %}
+
+
+<div class="container-fluid" style="margin-top: 10px">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="card">
+
+                <div class="card-body">
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('body').attr('style', 'backgroundimage:url(/media/{{ request.user.bg_img }}) !important;background-attachment: fixed !important;background-size: cover !important;')
+    $('.card').attr('style', 'background:rgba(0,0,0,0)')
+    $('.card-body').addClass('bg-white-95')
+</script>
+{% block js %}
+
+{% endblock %}
+</body>
+</html>

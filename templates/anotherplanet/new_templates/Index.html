@@ -1,0 +1,154 @@
+{% extends 'anotherplanet/new_templates/template_base/base.html' %}
+
+
+
+{% block title %}
+    Home page
+{% endblock %}
+{% block extra_css %}
+    <style>
+        .container-fluid {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+
+{% block index %}
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="text-secondary font-weight-bold py-2 f-15 choice">
+                        <a class="pb-2 active" href="/">
+                            <i class="fa fa-bars mr-1"></i>Time sequence</a>
+                    </div>
+                    <div class="summary-list">
+                        {% for article in page.object_list %}
+                            <div class="media mb-1 mb-sm-2 p-2 p-lg-3">
+                                <div class="align-self-center mr-2 mr-lg-3 w-25 modal-open">
+                                    <a href="/article/{{ article.id }}.html"
+                                       target="_blank">
+                                        <img class="w-100 article-img" src="/media/{{ article.head_img }}"
+                                             alt="{{ article.title }}">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <div class="text-muted mb-2 f-12">
+
+                                        <span>{{ article.user.username }}</span>
+                                        <span><i
+                                                class="fa fa-calendar-times-o ml-2 mr-1"></i>{{ article.create_time|date:'Y.m.d.' }}</span>
+                                    </div>
+                                    <h2 class="mt-0 font-weight-bold text-info f-17">
+                                        <a href="/article/{{ article.id }}.html">
+                                            {{ article.title }}
+                                        </a>
+                                    </h2>
+                                    <p class="d-none d-sm-block mb-2 f-15"> {{ article.description|truncatechars:"90" }}...</p>
+                                    <div class="text-muted mb-0 f-12">
+                                        <a class="cate"
+                                           href="/{{ article.blog.userinfo.username }}/article/{{ article.id }}.html"
+                                           title="View more articles in current category">
+                                            <i class="fa fa-book mr-1"></i>{{ article.category.name }}</a>
+                                        <span><i class="fa fa-eye ml-2 mr-1"></i>{{ article.views }}</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-center mt-3">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    {% if page.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{% url 'anotherplanet:categories' %}?page={{ start }}">Home page</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{% url 'anotherplanet:categories' %}?page={{ page.previous_page_number }}">Previous page</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Home page</a>
+                                        </li>
+                                        <li class="page-item disabled"><a class="page-link" href="#">Previous page</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page_num in page_range %}
+                                        {% if page_num_int == page_num %}
+                                            <li class="page-item active">
+                                                <a class="page-link"
+                                                   href="{% url 'anotherplanet:categories' %}?page={{ page_num }}">{{ page_num }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="{% url 'anotherplanet:categories' %}?page={{ page_num }}">{{ page_num }}</a>
+                                            </li>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                    {% if page.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{% url 'anotherplanet:categories' %}?page={{ page.next_page_number }}">Next page</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{% url 'anotherplanet:categories' %}?page={{ end }}">Last page</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled"><a class="page-link" href="#">Next page</a>
+                                        </li>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#">Last page</a>
+                                        </li>
+                                    {% endif %}
+
+
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4" style="margin-top: 38px;">
+                    <div class="card border-0 rounded-0 px-3 mb-2 mb-md-3" id="category-card">
+                        <div class="card-header bg-white px-0">
+                            <strong><i class="fa fa-book mr-2 f-17"></i>Article classification</strong>
+                        </div>
+                        <ul class="list-group list-group-flush f-16">
+                            {% for item in category_list %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                                    <a class="category-item"
+                                       href=" {%  url 'categories_list' item.id %}">{{ item.name }}</a>
+
+                                </li>
+                            {% empty %}
+                                <p>You did not add a category</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+    </main>
+
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+
+
+

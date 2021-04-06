@@ -1,0 +1,126 @@
+{% extends 'anotherplanet/new_templates/template_base/base.html' %}
+
+
+
+{% block title %}
+    Update article
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row mt-2">
+        <div class="col-md-10 offset-md-1">
+            <div class="input-group-prepend mt-2">
+                <div class="input-group-text">
+                    <i class="fa fa-header width-30" aria-hidden="true"></i>
+                </div>
+                <label for="title">
+                </label>
+                <input type="text" class="form-control" value="{{ article_obj.title }}"
+                       required id="article-title">
+            </div>
+            <div class="input-group-prepend mt-2">
+                <div id="editor">
+                    <textarea class="editormd-markdown-textarea" name="test-editormd-markdown-doc"
+                              style="display: none;">{{ article_obj.markdown }}</textarea>
+                </div>
+            </div>
+            <div class="input-group-prepend mt-2">
+                <div class="input-group-text">
+                    <i class="fa fa-th-large width-30" aria-hidden="true"></i>
+                </div>
+                <label for="choose_category"></label>
+                <select class="form-control" id="choose_category" name="category" required>
+                    {% for category in category_list %}
+                        {% if article_obj.category == category %}
+                            <option value="{{ category.id }}" selected>{{ category.name }}</option>
+                        {% else %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group-prepend mt-2">
+                <div class="input-group-text">
+                    <i class="fa fa-file-image-o width-30" aria-hidden="true"></i>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="head_img" required
+                           accept="image/*" value="{{ article_obj.head_img }}">
+                    <label class="custom-file-label" for="customFile">
+                        <span style="color: rgba(0,0,0,0.5)">{{ article_obj.head_img }}</span>
+                    </label>
+                </div>
+            </div>
+            <button class="btn btn-success btn-block mt-3" id="publish-article">update</button>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block js %}
+    <script src="/static/js/token.js"></script>
+    <script src="/static/other/editor.md/editormd.min.js"></script>
+    <script src="/static/other/editor.md/plugins/image-dialog/image-dialog.js"></script>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+    </script>
+    <script src="/static/js/bs-custom-file-input.js"></script>
+    <script>
+        $(function () {
+            var editor = editormd("editor", {
+                height: 400,
+                path: '/static/other/editor.md/lib/',
+                syncScrolling: "single",
+                saveHTMLToTextarea: true,
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL: '/upload_img/',
+                htmlDecode: "style,script,iframe",
+            });
+            $('#publish-article').click(function () {
+                let title = $('#article-title').val()
+                let category = $("#choose_category").val()
+                let head_img = $('#head_img')[0].files[0]
+                let mark_doc = editor.getMarkdown();
+                let html_doc = editor.getHTML();
+                let tags = $('#tag').val()
+                var formdata = new FormData()
+                formdata.append('title', title)
+                formdata.append('category', category)
+                formdata.append('head_img', head_img)
+                formdata.append('mark_doc', mark_doc)
+                formdata.append('html_doc', html_doc)
+                formdata.append('tags', tags)
+                $.ajax({
+                    url: '/update_article/' +{{ article_obj.pk }},
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formdata,
+                    success: function (data) {
+                        if (data.code === 100) {
+                            swal({
+                                title: data.msg,
+                                text: 'Refreshing page for you！'
+                            })
+                            setTimeout(function () {
+                                history.go(-1)
+                            }, 1500)
+                        } else {
+                            swal({
+                                title: data.msg,
+                            })
+                        }
+
+                    }
+                })
+            });
+        });
+    </script>
+{% endblock %}
